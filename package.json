@@ -1,0 +1,19 @@
+{
+  "name": "modul-equipment",
+  "version": "1.0.0",
+  "description": "ООО Модуль — аренда спецтехники",
+  "main": "api/server.js",
+  "scripts": {
+    "start": "node api/server.js",
+    "dev": "node api/server.js"
+  },
+  "keywords": ["rental", "equipment", "sqlite", "rest"],
+  "author": "PHANTOM",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.0.0"
+  }
+}

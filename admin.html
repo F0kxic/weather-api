@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>ООО Модуль — Админ-панель</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Oswald:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=4">
+</head>
+<body class="admin-body">
+    <div class="admin-wrapper">
+        <aside class="admin-sidebar hidden" id="sidebar">
+            <div class="admin-sidebar-brand">
+                <img src="images/logo.png" alt="Модуль" class="logo-image">
+                <span class="logo-sub">ADMIN PANEL</span>
+            </div>
+            <nav class="admin-nav">
+                <a href="#dashboard" class="admin-nav-item active" data-page="dashboard">
+                    <span class="admin-nav-icon">◈</span> Dashboard
+                </a>
+                <a href="#users" class="admin-nav-item" data-page="users">
+                    <span class="admin-nav-icon">👤</span> Пользователи
+                </a>
+                <a href="#equipment" class="admin-nav-item" data-page="equipment">
+                    <span class="admin-nav-icon">🖥</span> Техника
+                </a>
+                <a href="#rentals" class="admin-nav-item" data-page="rentals">
+                    <span class="admin-nav-icon">📋</span> Заявки
+                </a>
+                <a href="#categories" class="admin-nav-item" data-page="categories">
+                    <span class="admin-nav-icon">🏷</span> Категории
+                </a>
+                <div class="admin-nav-divider"></div>
+                <a href="index.html" class="admin-nav-item">
+                    <span class="admin-nav-icon">↩</span> На сайт
+                </a>
+                <a href="#" class="admin-nav-item" onclick="app.logout(); return false;">
+                    <span class="admin-nav-icon">⏻</span> Выйти
+                </a>
+            </nav>
+        </aside>
+
+        <main class="admin-main" id="mainContent">
+            <div id="loginPage" class="admin-login-page">
+                <div class="admin-login-card">
+                    <div class="nav-brand" style="justify-content:center; margin-bottom:2rem;">
+                        <span class="logo-main">МОДУЛЬ</span>
+                        <span class="logo-sub">ADMIN</span>
+                    </div>
+                    <form id="adminLoginForm">
+                        <div class="form-group">
+                            <label>Логин</label>
+                            <input type="text" id="adminLoginUsername" required placeholder="admin">
+                        </div>
+                        <div class="form-group">
+                            <label>Пароль</label>
+                            <input type="password" id="adminLoginPassword" required placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="btn-primary btn-block">Войти</button>
+                    </form>
+                    <p id="adminLoginError" class="error-msg"></p>
+                </div>
+            </div>
+
+            <div id="pages" class="hidden">
+                <section id="page-dashboard" class="page">
+                    <header class="page-header">
+                        <h1 class="page-title">Dashboard</h1>
+                    </header>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3>Пользователей</h3>
+                            <p class="stat-value" id="statUsers">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Единиц техники</h3>
+                            <p class="stat-value" id="statEquipment">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Доступно</h3>
+                            <p class="stat-value" id="statAvailable">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>В аренде</h3>
+                            <p class="stat-value" id="statRented">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Всего заявок</h3>
+                            <p class="stat-value" id="statRentals">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Ожидают</h3>
+                            <p class="stat-value" id="statPending">0</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="page-users" class="page hidden">
+                    <header class="page-header">
+                        <h1 class="page-title">Пользователи</h1>
+                    </header>
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>ID</th><th>Логин</th><th>Email</th><th>ФИО</th><th>Телефон</th><th>Роль</th><th>Действия</th></tr>
+                            </thead>
+                            <tbody id="adminUsersTable"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="page-equipment" class="page hidden">
+                    <header class="page-header">
+                        <h1 class="page-title">Техника</h1>
+                        <button class="btn-primary" onclick="app.openAddEquipmentModal()">+ Добавить технику</button>
+                    </header>
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>ID</th><th>Название</th><th>Категория</th><th>Цена за сутки</th><th>Статус</th><th>Действия</th></tr>
+                            </thead>
+                            <tbody id="adminEquipmentTable"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="page-rentals" class="page hidden">
+                    <header class="page-header">
+                        <h1 class="page-title">Заявки на аренду</h1>
+                    </header>
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>ID</th><th>Клиент</th><th>Техника</th><th>Период</th><th>Сумма</th><th>Статус</th><th>Действия</th></tr>
+                            </thead>
+                            <tbody id="adminRentalsTable"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="page-categories" class="page hidden">
+                    <header class="page-header">
+                        <h1 class="page-title">Категории</h1>
+                        <button class="btn-primary" onclick="app.openAddCategoryModal()">+ Добавить категорию</button>
+                    </header>
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>ID</th><th>Иконка</th><th>Название</th><th>Slug</th><th>Описание</th><th>Действия</th></tr>
+                            </thead>
+                            <tbody id="adminCategoriesTable"></tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Модальное окно добавления техники -->
+    <div id="addEquipmentModal" class="modal">
+        <div class="modal-overlay" onclick="app.closeAddEquipmentModal()"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="app.closeAddEquipmentModal()">&times;</button>
+            <h3 class="modal-title">Добавить технику</h3>
+            <form id="addEquipmentForm">
+                <div class="form-group">
+                    <label>Категория</label>
+                    <select id="equipmentCategory" required>
+                        <option value="">Выберите категорию</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Название</label>
+                    <input type="text" id="equipmentName" required placeholder="Например: Экскаватор JCB">
+                </div>
+                <div class="form-group">
+                    <label>Описание</label>
+                    <textarea id="equipmentDescription" placeholder="Краткое описание техники"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Технические характеристики</label>
+                    <textarea id="equipmentSpecs" placeholder="Мощность, грузоподъемность и т.д."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Цена за сутки (₽)</label>
+                    <input type="number" id="equipmentPrice" required placeholder="5000">
+                </div>
+                <div class="form-group">
+                    <label>URL изображения</label>
+                    <input type="text" id="equipmentImage" placeholder="images/equipment.jpg">
+                </div>
+                <div class="form-group">
+                    <label>Статус</label>
+                    <select id="equipmentStatus" required>
+                        <option value="available">Доступно</option>
+                        <option value="rented">В аренде</option>
+                        <option value="maintenance">На обслуживании</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary btn-block">Добавить</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно редактирования техники -->
+    <div id="editEquipmentModal" class="modal">
+        <div class="modal-overlay" onclick="app.closeEditEquipmentModal()"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="app.closeEditEquipmentModal()">&times;</button>
+            <h3 class="modal-title">Редактировать технику</h3>
+            <form id="editEquipmentForm">
+                <input type="hidden" id="editEquipmentId">
+                <div class="form-group">
+                    <label>Категория</label>
+                    <select id="editEquipmentCategory" required>
+                        <option value="">Выберите категорию</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Название</label>
+                    <input type="text" id="editEquipmentName" required placeholder="Например: Экскаватор JCB">
+                </div>
+                <div class="form-group">
+                    <label>Описание</label>
+                    <textarea id="editEquipmentDescription" placeholder="Краткое описание техники"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Технические характеристики</label>
+                    <textarea id="editEquipmentSpecs" placeholder="Мощность, грузоподъемность и т.д."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Цена за сутки (₽)</label>
+                    <input type="number" id="editEquipmentPrice" required placeholder="5000">
+                </div>
+                <div class="form-group">
+                    <label>URL изображения</label>
+                    <input type="text" id="editEquipmentImage" placeholder="images/equipment.jpg">
+                </div>
+                <div class="form-group">
+                    <label>Статус</label>
+                    <select id="editEquipmentStatus" required>
+                        <option value="available">Доступно</option>
+                        <option value="rented">В аренде</option>
+                        <option value="maintenance">На обслуживании</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary btn-block">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно редактирования пользователя -->
+    <div id="editUserModal" class="modal">
+        <div class="modal-overlay" onclick="app.closeEditUserModal()"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="app.closeEditUserModal()">&times;</button>
+            <h3 class="modal-title">Редактировать пользователя</h3>
+            <form id="editUserForm">
+                <input type="hidden" id="editUserId">
+                <div class="form-group">
+                    <label>Логин</label>
+                    <input type="text" id="editUserUsername" readonly style="background: var(--bg); cursor: not-allowed;">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="editUserEmail" required placeholder="example@mail.ru">
+                </div>
+                <div class="form-group">
+                    <label>ФИО</label>
+                    <input type="text" id="editUserFullName" placeholder="Иванов Иван Иванович">
+                </div>
+                <div class="form-group">
+                    <label>Телефон</label>
+                    <input type="tel" id="editUserPhone" placeholder="+7 (999) 000-00-00">
+                </div>
+                <div class="form-group">
+                    <label>Роль</label>
+                    <select id="editUserRole" required>
+                        <option value="client">Клиент</option>
+                        <option value="admin">Админ</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary btn-block">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно добавления категории -->
+    <div id="addCategoryModal" class="modal">
+        <div class="modal-overlay" onclick="app.closeAddCategoryModal()"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="app.closeAddCategoryModal()">&times;</button>
+            <h3 class="modal-title">Добавить категорию</h3>
+            <form id="addCategoryForm">
+                <div class="form-group">
+                    <label>Название</label>
+                    <input type="text" id="categoryName" required placeholder="Например: Экскаваторы">
+                </div>
+                <div class="form-group">
+                    <label>Slug (латиница)</label>
+                    <input type="text" id="categorySlug" required placeholder="excavators">
+                </div>
+                <div class="form-group">
+                    <label>Описание</label>
+                    <textarea id="categoryDescription" placeholder="Краткое описание категории"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Иконка (emoji или символ)</label>
+                    <input type="text" id="categoryIcon" placeholder="🚜" maxlength="2">
+                </div>
+                <button type="submit" class="btn-primary btn-block">Добавить</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно редактирования категории -->
+    <div id="editCategoryModal" class="modal">
+        <div class="modal-overlay" onclick="app.closeEditCategoryModal()"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="app.closeEditCategoryModal()">&times;</button>
+            <h3 class="modal-title">Редактировать категорию</h3>
+            <form id="editCategoryForm">
+                <input type="hidden" id="editCategoryId">
+                <div class="form-group">
+                    <label>Название</label>
+                    <input type="text" id="editCategoryName" required placeholder="Например: Экскаваторы">
+                </div>
+                <div class="form-group">
+                    <label>Slug (латиница)</label>
+                    <input type="text" id="editCategorySlug" required placeholder="excavators">
+                </div>
+                <div class="form-group">
+                    <label>Описание</label>
+                    <textarea id="editCategoryDescription" placeholder="Краткое описание категории"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Иконка (emoji или символ)</label>
+                    <input type="text" id="editCategoryIcon" placeholder="🚜" maxlength="2">
+                </div>
+                <button type="submit" class="btn-primary btn-block">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js?v=4"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            app.initAdmin();
+        });
+    </script>
+</body>
+</html>

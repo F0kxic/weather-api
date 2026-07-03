@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>ООО Модуль — Аренда спецтехники</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Oswald:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=4">
+</head>
+<body>
+    <nav class="navbar" id="navbar">
+        <div class="nav-brand">
+            <img src="images/logo.png" alt="Модуль" class="logo-image">
+        </div>
+        <button class="mobile-menu-toggle" id="mobileMenuToggle" onclick="app.toggleMobileMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <div class="nav-links" id="navLinks">
+            <a href="index.html" class="nav-link active">Каталог</a>
+            <a href="admin.html" id="adminLink" class="nav-link hidden">Админ-панель</a>
+            <a href="auth.html" id="authBtn" class="nav-link btn-primary">Войти</a>
+            <div id="userNav" class="user-nav hidden">
+                <span id="userName"></span>
+                <button onclick="app.logout()" class="btn-ghost">Выйти</button>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero" style="background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('images/excavator.jpg') center/cover no-repeat; min-height: 70vh; display: flex; align-items: center; justify-content: center;">
+            <div class="hero-content">
+                <h1 class="hero-title">АРЕНДА<br><span class="primary">СПЕЦТЕХНИКИ</span></h1>
+                <p class="hero-sub">Надёжная техника для строительства, дорожных работ и промышленных объектов. Оставьте заявку — мы свяжемся с вами.</p>
+                <a href="#catalog" class="btn-primary btn-lg">Смотреть каталог</a>
+            </div>
+        </section>
+
+        <section class="section categories-section" id="categories">
+            <div class="container">
+                <h2 class="section-title">Категории</h2>
+                <div class="categories-grid" id="categoriesGrid"></div>
+            </div>
+        </section>
+
+        <section class="section equipment-section" id="catalog">
+            <div class="container">
+                <h2 class="section-title">Каталог техники</h2>
+
+                <!-- Поиск и фильтры -->
+                <div class="catalog-controls">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Поиск по названию, описанию, характеристикам..." class="search-input">
+                        <button onclick="app.applyFilters()" class="btn-primary">Найти</button>
+                    </div>
+
+                    <div class="filters-row">
+                        <select id="filterCategory" class="filter-select" onchange="app.applyFilters()">
+                            <option value="">Все категории</option>
+                        </select>
+
+                        <select id="filterStatus" class="filter-select" onchange="app.applyFilters()">
+                            <option value="">Любой статус</option>
+                            <option value="available">Доступно</option>
+                            <option value="rented">В аренде</option>
+                            <option value="maintenance">На обслуживании</option>
+                        </select>
+
+                        <div class="price-filter">
+                            <input type="number" id="filterMinPrice" placeholder="Цена от" class="filter-input" onchange="app.applyFilters()">
+                            <span>—</span>
+                            <input type="number" id="filterMaxPrice" placeholder="до" class="filter-input" onchange="app.applyFilters()">
+                        </div>
+
+                        <select id="sortBy" class="filter-select" onchange="app.applyFilters()">
+                            <option value="">Сортировка</option>
+                            <option value="price_asc">Цена: по возрастанию</option>
+                            <option value="price_desc">Цена: по убыванию</option>
+                            <option value="name">По названию</option>
+                        </select>
+
+                        <button onclick="app.resetFilters()" class="btn-ghost">Сбросить</button>
+                    </div>
+                </div>
+
+                <div class="equipment-grid" id="equipmentGrid"></div>
+            </div>
+        </section>
+    </main>
+
+    <div id="rentalModal" class="modal">
+        <div class="modal-overlay" onclick="app.closeRentalModal()"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="app.closeRentalModal()">&times;</button>
+            <h3 class="modal-title" id="rentalTitle">Заявка на аренду</h3>
+            <form id="rentalForm">
+                <input type="hidden" id="rentalEquipmentId">
+                <div class="form-group">
+                    <label>Техника</label>
+                    <input type="text" id="rentalEquipmentName" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Стоимость за сутки</label>
+                    <input type="text" id="rentalPrice" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Дата начала</label>
+                    <input type="date" id="rentalStart" required>
+                </div>
+                <div class="form-group">
+                    <label>Дата окончания</label>
+                    <input type="date" id="rentalEnd" required>
+                </div>
+                <div class="form-group">
+                    <label>Телефон для связи</label>
+                    <input type="tel" id="rentalPhone" placeholder="+7 (999) 000-00-00" required>
+                </div>
+                <div class="form-group">
+                    <label>Комментарий</label>
+                    <textarea id="rentalComment" placeholder="Опишите объект, условия доставки и т.д."></textarea>
+                </div>
+                <button type="submit" class="btn-primary btn-block">Оставить заявку</button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p> ООО Модуль. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <script src="app.js?v=4"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            app.initHome();
+            const nav = document.getElementById('navbar');
+            window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 50));
+        });
+    </script>
+</body>
+</html>
